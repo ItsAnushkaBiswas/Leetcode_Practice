@@ -1,49 +1,57 @@
 class Solution {
-  public int minDays(int[][] grid) {
-    if (disconnected(grid))
-      return 0;
+    private static final int[] DIRS = new int[] {-1, 0, 1, 0, -1};
+    private int[][] grid;
+    private int m;
+    private int n;
 
-    // Try to remove 1 land.
-    for (int i = 0; i < grid.length; ++i)
-      for (int j = 0; j < grid[0].length; ++j)
-        if (grid[i][j] == 1) {
-          grid[i][j] = 0;
-          if (disconnected(grid))
-            return 1;
-          grid[i][j] = 1;
+    public int minDays(int[][] grid) {
+        this.grid = grid;
+        m = grid.length;
+        n = grid[0].length;
+        if (count() != 1) {
+            return 0;
         }
-
-    // Remove 2 lands.
-    return 2;
-  }
-
-  private final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-  private boolean disconnected(int[][] grid) {
-    int islandsCount = 0;
-    boolean[][] seen = new boolean[grid.length][grid[0].length];
-    for (int i = 0; i < grid.length; ++i)
-      for (int j = 0; j < grid[0].length; ++j) {
-        if (grid[i][j] == 0 || seen[i][j])
-          continue;
-        if (++islandsCount > 1)
-          return true;
-        dfs(grid, i, j, seen);
-      }
-
-    return islandsCount != 1;
-  }
-
-  private void dfs(int[][] grid, int i, int j, boolean[][] seen) {
-    seen[i][j] = true;
-    for (int[] dir : dirs) {
-      int x = i + dir[0];
-      int y = j + dir[1];
-      if (x < 0 || x == grid.length || y < 0 || y == grid[0].length)
-        continue;
-      if (grid[x][y] == 0 || seen[x][y])
-        continue;
-      dfs(grid, x, y, seen);
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    if (count() != 1) {
+                        return 1;
+                    }
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return 2;
     }
-  }
+
+    private int count() {
+        int cnt = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    dfs(i, j);
+                    ++cnt;
+                }
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 2) {
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return cnt;
+    }
+
+    private void dfs(int i, int j) {
+        grid[i][j] = 2;
+        for (int k = 0; k < 4; ++k) {
+            int x = i + DIRS[k], y = j + DIRS[k + 1];
+            if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] == 1) {
+                dfs(x, y);
+            }
+        }
+    }
 }
