@@ -13,7 +13,7 @@ class Solution {
 
         
         ListNode fast = head, slow = head;
-        for(int i = 0; i< n; i++) {
+        for(int i = 0; i<n; i++) {
             fast = fast.next;
         }
         // if fast becomes null then the element must next of head
